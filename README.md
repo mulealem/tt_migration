@@ -70,6 +70,16 @@ Expect roughly `(2_731_578, 3_700_000+, 3_800_000+)`.
 
 ## Notes
 
+- **Already migrated?** If your database predates manager-name search, apply the
+  two trigram indexes once (schema.sql includes them for fresh runs):
+
+  ```sql
+  CREATE EXTENSION IF NOT EXISTS pg_trgm;
+  CREATE INDEX IF NOT EXISTS associates_manager_eng_trgm ON associates USING GIN (manager_name_eng gin_trgm_ops);
+  CREATE INDEX IF NOT EXISTS associates_manager_amh_trgm ON associates USING GIN (manager_name_amh gin_trgm_ops);
+  ```
+
+  Takes a few minutes on ~3.8M `associates` rows; safe to run while the API is up.
 - **Provider storage**: expect **5–8 GB** of data + indexes. Free tiers (~0.5 GB)
   will not fit; the smallest paid tier with ~10 GB storage is the target.
 - **Freshness**: after a new crawl, delete `.etl_state` and rerun `etl.py`.

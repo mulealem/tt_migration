@@ -56,6 +56,10 @@ CREATE INDEX IF NOT EXISTS business_licenses_business_id_idx ON business_license
 CREATE INDEX IF NOT EXISTS license_subgroups_license_id_idx  ON license_subgroups (license_id);
 CREATE INDEX IF NOT EXISTS license_subgroups_code_idx        ON license_subgroups (code);
 
+-- Manager-name search (api /search?q and manager= filter use ILIKE '%q%' on these)
+CREATE INDEX IF NOT EXISTS associates_manager_eng_trgm ON associates USING GIN (manager_name_eng gin_trgm_ops);
+CREATE INDEX IF NOT EXISTS associates_manager_amh_trgm ON associates USING GIN (manager_name_amh gin_trgm_ops);
+
 -- ===========================================================================
 -- View: a company joined with its dominant business description.
 -- Uses LATERAL with LIMIT 1 so cost stays ~index-scan, not full count.
